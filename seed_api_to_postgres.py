@@ -1,13 +1,12 @@
 import requests
 from pyspark.sql import SparkSession
-import json
-from pyspark.sql import Row
 
 spark = SparkSession.builder \
     .appName("API to Postgres") \
     .config("spark.jars.packages", "org.postgresql:postgresql:42.7.1") \
     .getOrCreate()
 
+# API URL (returns a list of JSON objects)
 api_url = "https://jsonplaceholder.typicode.com/posts"
 response = requests.get(api_url)
 
@@ -18,10 +17,15 @@ else:
     print(f"Failed to fetch data: {response.status_code}")
     exit()
 
-rdd = spark.sparkContext.parallelize(data)
-df = spark.read.json(rdd)
-df.show()
+# Convert JSON data to DataFrame
+if isinstance(data, list):
+    df = spark.createDataFrame(data)
+    df.show()
+else:
+    print("Data is not in list format")
+    exit()
 
+# Database connection details
 db_url = "jdbc:postgresql://w3.training5.modak.com:5432/postgres"
 db_properties = {
     "user": "mt24010",
@@ -29,6 +33,7 @@ db_properties = {
     "driver": "org.postgresql.Driver"
 }
 
+# Write DataFrame to PostgreSQL
 df.write \
   .format("jdbc") \
   .option("url", db_url) \
