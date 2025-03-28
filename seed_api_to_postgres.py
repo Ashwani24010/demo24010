@@ -24,8 +24,8 @@ df.show()
 
 db_url = "jdbc:postgresql://localhost:5432/mydb"
 db_properties = {
-    "user": "your_username",
-    "password": "your_password",
+    "user": "mt24010",
+    "password": "mt24010@m04y24",
     "driver": "org.postgresql.Driver"
 }
 
