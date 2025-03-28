@@ -22,7 +22,7 @@ rdd = spark.sparkContext.parallelize(data)
 df = spark.read.json(rdd)
 df.show()
 
-db_url = "jdbc:postgresql://localhost:5432/mydb"
+db_url = "jdbc:postgresql://w3.training5.modak.com:5432/postgres"
 db_properties = {
     "user": "mt24010",
     "password": "mt24010@m04y24",
@@ -32,7 +32,7 @@ db_properties = {
 df.write \
   .format("jdbc") \
   .option("url", db_url) \
-  .option("dbtable", "api_data") \
+  .option("dbtable", "posts1504") \
   .option("user", db_properties["user"]) \
   .option("password", db_properties["password"]) \
   .mode("append") \
