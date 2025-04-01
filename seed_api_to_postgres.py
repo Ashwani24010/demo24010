@@ -14,7 +14,7 @@ password = spark.conf.get("postgres-user-pass", "Not Set")
 db_url = spark.conf.get("db_url", "Not Set")
 
 # Fetch data from API
-url = "https://jsonplaceholder.typicode.com/posts"
+url = "https://picsum.photos/v2/list"
 response = requests.get(url)
 res_json = response.json()
 
