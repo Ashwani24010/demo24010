@@ -7,6 +7,8 @@ spark = SparkSession.builder \
     .appName("MySparkApp") \
     .config("spark.jars", "/path/to/postgresql-42.7.1.jar")  # Ensure the correct path to your JDBC driver
     .getOrCreate()
+
+# Access SparkContext and configuration
 sc = spark.sparkContext
 conf = sc.getConf()
 
@@ -36,7 +38,7 @@ schema = StructType([
 ])
 
 # Create a DataFrame from the JSON data using the schema
-df = spark.createDataFrame(res_json, schema=json_schema)
+df = spark.createDataFrame(res_json, schema=schema)
 
 # Database connection properties
 db_props = {
@@ -50,9 +52,9 @@ df.show()
 
 # Write DataFrame to PostgreSQL
 df.write.jdbc(
-    url=db_url,
+    url=db_url,  # Ensure this URL is in the format jdbc:postgresql://<host>:<port>/<database>
     table="images",  # Ensure this table exists in your PostgreSQL database
-    mode="overwrite",   # Use "append" to add data without overwriting
+    mode="overwrite",  # Use "append" to add data without overwriting
     properties=db_props
 )
 
