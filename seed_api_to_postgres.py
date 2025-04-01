@@ -1,45 +1,55 @@
 import requests
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import * 
-from pyspark.sql.types import *
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
-
-spark = SparkSession.builder\
-    .appName("MySparkApp")\
-    .config("spark.jars", "/path/to/postgresql-42.7.1.jar")\
+# Initialize Spark session with PostgreSQL JDBC driver
+spark = SparkSession.builder \
+    .appName("MySparkApp") \
+    .config("spark.jars", "/path/to/postgresql-42.7.1.jar")  # Ensure the correct path to your JDBC driver
     .getOrCreate()
 
-#fetching all the conf
-username = spark.conf.get("postgres-user-name","Not Set")
-password = spark.conf.get("postgres-user-pass","Not Set")
-db_url = spark.conf.get("db_url","Not Set")
+# Fetching all the configuration properties from Spark
+username = spark.conf.get("postgres-user-name", "Not Set")
+password = spark.conf.get("postgres-user-pass", "Not Set")
+db_url = spark.conf.get("db_url", "Not Set")
 
-url = "https://jsonplaceholder.typicode.com/posts" 
+# Fetch data from API
+url = "https://jsonplaceholder.typicode.com/posts"
 response = requests.get(url)
 res_json = response.json()
 
+# Ensure the response is in the expected format (list of dictionaries)
+if not isinstance(res_json, list):
+    print("Error: Expected a list of JSON objects from the API")
+    exit()
+
+# Define the schema for the DataFrame
 json_schema = StructType([
-    StructField("userId",IntegerType(),True),
-    StructField("id",IntegerType(),True),
-    StructField("title",StringType(),True),
-    StructField("body",StringType(),True)
+    StructField("userId", IntegerType(), True),
+    StructField("id", IntegerType(), True),
+    StructField("title", StringType(), True),
+    StructField("body", StringType(), True)
 ])
 
-df = spark.createDataFrame(data=res_json,schema=json_schema)
+# Create a DataFrame from the JSON data using the schema
+df = spark.createDataFrame(res_json, schema=json_schema)
 
+# Database connection properties
 db_props = {
-    "user":username,
-    "password":password,
-    "driver":"org.postgresql.Driver"
+    "user": username,
+    "password": password,
+    "driver": "org.postgresql.Driver"
 }
 
+# Print the DataFrame (Optional)
+df.show()
 
-print(res_json)
-
+# Write DataFrame to PostgreSQL
 df.write.jdbc(
     url=db_url,
-    table="posts1504",
-    mode="overwrite",
+    table="posts1504",  # Ensure this table exists in your PostgreSQL database
+    mode="overwrite",   # Use "append" to add data without overwriting
     properties=db_props
 )
 
+print("Data successfully written to PostgreSQL.")
