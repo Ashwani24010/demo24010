@@ -7,11 +7,13 @@ spark = SparkSession.builder \
     .appName("MySparkApp") \
     .config("spark.jars", "/path/to/postgresql-42.7.1.jar")  # Ensure the correct path to your JDBC driver
     .getOrCreate()
+sc = spark.sparkContext
+conf = sc.getConf()
 
 # Fetching all the configuration properties from Spark
-username = spark.conf.get("postgres-user-name", "Not Set")
-password = spark.conf.get("postgres-user-pass", "Not Set")
-db_url = spark.conf.get("db_url", "Not Set")
+username = conf.get("postgres-user-name", "Not Set")
+password = conf.get("postgres-user-pass", "Not Set")
+db_url = conf.get("db_url", "Not Set")
 
 # Fetch data from API
 url = "https://picsum.photos/v2/list"
