@@ -24,11 +24,13 @@ if not isinstance(res_json, list):
     exit()
 
 # Define the schema for the DataFrame
-json_schema = StructType([
-    StructField("userId", IntegerType(), True),
-    StructField("id", IntegerType(), True),
-    StructField("title", StringType(), True),
-    StructField("body", StringType(), True)
+schema = StructType([
+    StructField("id", StringType(), True),
+    StructField("author", StringType(), True),
+    StructField("width", IntegerType(), True),
+    StructField("height", IntegerType(), True),
+    StructField("url", StringType(), True),
+    StructField("download_url", StringType(), True)
 ])
 
 # Create a DataFrame from the JSON data using the schema
@@ -47,7 +49,7 @@ df.show()
 # Write DataFrame to PostgreSQL
 df.write.jdbc(
     url=db_url,
-    table="posts1504",  # Ensure this table exists in your PostgreSQL database
+    table="images",  # Ensure this table exists in your PostgreSQL database
     mode="overwrite",   # Use "append" to add data without overwriting
     properties=db_props
 )
